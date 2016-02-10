@@ -1,38 +1,40 @@
-CSS variables, more accurately known as CSS custom properties, are landing in
-Chrome 49. They can be useful for reducing repetition in CSS, and also for 
-powerful runtime effects like theme switching and potentially extending/
-polyfilling future CSS features.
+                                                                                 
+CSS-переменные, точнее известные как кастомные CSS-свойства, появляются в
+Chrome 49. Они могут использоваться для уменьшения повторяющегося кода в CSS, а
+также для тяжёлых эффектов наподобие смены тем на лету и, потенциально,
+расширения и полифилирования будущих особенностей CSS.
 
-## CSS Clutter {#css-clutter}
+## CSS Clutter
 
-When designing an application it’s a common practice to set aside a set of
-brand colors that will be reused to keep the look of the app consistent. 
-Unfortunately, repeating these color values over and over again in your CSS is 
-not only a chore, but also error prone. If, at some point, one of the colors 
-needs to be changed, you could throw caution to the wind and “find-and-replace” 
-all the things, but on a large enough project this could easily get dangerous.
+Обычная практика при разработке приложения - отложить набор хороших цветов,
+которые будут снова использоваться впоследствии, чтобы не нарушать стилистику
+приложения. Увы, многократное упоминание значений этих цветов в CSS-коде - не
+просто рутина, но ещё и предрасположенность к ошибкам. Если в какой-то момент
+один из цветов нужно поменять, разработчик может неосторожно воспользоваться
+"find-and-replace" по всему документу, что в достаточно большом проекте вполне
+может быть опасно.
 
-In recent times many developers have turned to CSS preprocessors like SASS or
-LESS which solve this problem through the use of preprocessor variables. While 
-these tools have boosted developer productivity immensely, the variables that 
-they use suffer from a major drawback, which is that they’re static and can’t be
-changed at runtime. Adding the ability to change variables at runtime not only 
-opens the door to things like dynamic application theming, but also has major 
-ramifications for responsive design and the potential to polyfill future CSS 
-features. With the release of Chrome 49, these abilities are now available in 
-the form of CSS custom properties.
+В последнее время многие разработчики стали использовать CSS-препроцессоры типа
+SASS или LESS, которые справляются с этой проблемой при помощи переменных
+препроцессора. Хотя эти инструменты заметно улучшили продуктивность разработки,
+используемые ими переменные имеют очень серьёзный недостаток: они статичны и не
+могут меняться на лету. Добавление возможности менять переменные в рантайме не
+только позволяет такие вещи, как динамическая смена тем, но и влечёт серьёзные
+улучшения отзывчивого дизайна и возможность полифилировани будущих особенностей
+CSS. С выходом Chrome 49, эти возможности стали доступны в виде кастомных
+CSS-свойств.
 
-## Custom properties in a nutshell {#custom-properties-in-a-nutshell}
+## Кастомные свойства в двух словах
 
-Custom properties add two new features to our CSS toolbox:
+Кастомные свойства добавляют две новые особенности в наш инструментарий CSS:
 
-The ability for an author to assign arbitrary values to a property with an
-author-chosen name. The`var()` function, which allows an author to use these
-values in other properties.
+Автор может присваивать произвольные значения свойствам с придуманными им самим
+именами. Функция `var()` позволяет автору использовать эти значения в других
+свойствах.
 
-Here’s a quick example to demonstrate
+Краткий пример для демонстрации:
 
-    <span class="nd">:root</span> <span class="p">{</span>
+`:root{</span>
       <span class="o">--</span><span class="n">main</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="m">#06c</span><span class="p">;</span>
     <span class="p">}</span>
     
