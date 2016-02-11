@@ -1,10 +1,11 @@
-                                                                                 
+# Переменные CSS: на кой оно надо
+
 CSS-переменные, точнее известные как кастомные CSS-свойства, появляются в
 Chrome 49. Они могут использоваться для уменьшения повторяющегося кода в CSS, а
 также для тяжёлых эффектов наподобие смены тем на лету и, потенциально,
 расширения и полифилирования будущих особенностей CSS.
 
-## CSS Clutter
+## Мусор в CSS
 
 Обычная практика при разработке приложения - отложить набор хороших цветов,
 которые будут снова использоваться впоследствии, чтобы не нарушать стилистику
@@ -34,273 +35,271 @@ CSS-свойств.
 
 Краткий пример для демонстрации:
 
-`:root{</span>
-      <span class="o">--</span><span class="n">main</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="m">#06c</span><span class="p">;</span>
-    <span class="p">}</span>
-    
-    <span class="nf">#foo</span> <span class="nt">h1</span> <span class="p">{</span>
-      <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">main</span><span class="o">-</span><span class="k">color</span><span class="p">);</span>
-    <span class="p">}</span>
-
-`--main-color` is an author defined custom property with a value of #06c. Note
-that all custom properties begin with two dashes.
-
-The `var()` function retrieves and replaces itself with the custom property
-value, resulting in`color: #06c;` So long as the custom property is defined
-somewhere in your stylesheet it should be available to the`var` function.
-
-The syntax may look a little strange at first. Many developers ask, “Why not
-just use`$foo` for variable names?” The approach was specifically chosen to
-be as flexible as possible and potentially allow for`$foo` macros in the future
-. For the backstory you can read[this post][1] from one of the spec authors,
-Tab Atkins.
-
-## Custom property syntax {#custom-property-syntax}
-
-The syntax for a custom property is straightforward.
-
-Note that custom properties are case sensitive, so `--header-color` and 
-`--Header-Color` are different custom properties. While they may seem simple at
-face value, the allowed syntax for custom properties is actually quite 
-permissive. For example, the following is a valid custom property:
-
-    <span class="nt">--foo</span><span class="o">:</span> <span class="nt">if</span><span class="o">(</span><span class="nt">x</span> <span class="o">></span> <span class="nt">5</span><span class="o">)</span> <span class="nt">this</span><span class="nc">.width</span> <span class="o">=</span> <span class="nt">10</span><span class="o">;</span>
-
-While this would not be useful as a variable, as it would be invalid in any
-normal property, it could potentially be read and acted upon with JavaScript at 
-runtime. This means custom properties have the potential to unlock all kinds of 
-interesting techniques not currently possible with today’s CSS preprocessors. So
-if you’re thinking
-“*yawn* I have SASS so who cares…” then take a second look! These are not
-the variables you’re used to working with.
-
-### The cascade {#the-cascade}
-
-Custom properties follow standard cascade rules, so you can define the same
-property at different levels of specificity
-
-    <span class="nd">:root</span> <span class="p">{</span> <span class="o">--</span><span class="k">color</span><span class="o">:</span> <span class="nb">blue</span><span class="p">;</span> <span class="p">}</span>
-    <span class="nt">div</span> <span class="p">{</span> <span class="o">--</span><span class="k">color</span><span class="o">:</span> <span class="nb">green</span><span class="p">;</span> <span class="p">}</span>
-    <span class="nf">#alert</span> <span class="p">{</span> <span class="o">--</span><span class="k">color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span> <span class="p">}</span>
-    <span class="o">*</span> <span class="p">{</span> <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="k">color</span><span class="p">);</span> <span class="p">}</span>
-
-    <span class="nt"><p></span>I inherited blue from the root element!<span class="nt"></p></span>
-    <span class="nt"><div></span>I got green set directly on me!<span class="nt"></div></span>
-    <span class="nt"><div</span> <span class="na">id=</span><span class="s">"alert"</span><span class="nt">></span>
-      While I got red set directly on me!
-      <span class="nt"><p></span>I’m red too, because of inheritance!<span class="nt"></p></span>
-    <span class="nt"></div></span>
-
-This means you can leverage custom properties inside of media queries to aid
-with responsive design. One use case might be to expand the margining around 
-your major sectioning elements as the screen size increases:
-
-    <span class="nd">:root</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">gutter</span><span class="o">:</span> <span class="m">4px</span><span class="p">;</span>
-    <span class="p">}</span>
-    
-    <span class="nt">section</span> <span class="p">{</span>
-      <span class="k">margin</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">gutter</span><span class="p">);</span>
-    <span class="p">}</span>
-    
-    <span class="k">@media</span> <span class="o">(</span><span class="nt">min-width</span><span class="o">:</span> <span class="nt">600px</span><span class="o">)</span> <span class="p">{</span>
-      <span class="nd">:root</span> <span class="p">{</span>
-        <span class="o">--</span><span class="n">gutter</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-
-It’s important to call out that the above snippet of code is not possible
-using today’s CSS preprocessors which are unable to define variables inside of 
-media queries. Having this ability unlocks a lot of potential!
-
-It’s also possible to have custom properties that derive their value from
-other custom properties. This can be extremely useful for theming:
-
-    <span class="nd">:root</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
-      <span class="o">--</span><span class="n">logo</span><span class="o">-</span><span class="k">text</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="p">);</span>
-    <span class="p">}</span>
-
-## The var() function {#the-var-function}
-
-To retrieve and use the value of a custom property you’ll need to use the 
-`var()` function. The syntax for the `var()` function looks like this:
-
-    var(<custom-property-name> [, <declaration-value> ]? )
-    
-
-Where `<custom-property-name>` is the name of an author defined custom
-property, like`--foo`, and `<declaration-value>` is a fallback value to
-be used when the referenced custom property is invalid. Fallback values can be a
-comma separated list, which will be combined into a single value. For example
-`var(--font-stack,
-"Roboto", "Helvetica");` defines a fallback of `"Roboto", "Helvetica"`. Keep in
-mind that shorthand values, like those used for margin and padding, are not 
-comma separated, so an appropriate fallback for padding would look like this.
-
-    <span class="nt">p</span> <span class="p">{</span>
-      <span class="k">padding</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">pad</span><span class="o">,</span> <span class="m">10px</span> <span class="m">15px</span> <span class="m">20px</span><span class="p">);</span>
-    <span class="p">}</span>
-
-Using these fallback values, a component author can write defensive styles for
-their element:
-
-    <span class="c">/* In the component’s style: */</span>
-    <span class="nc">.component</span> <span class="nc">.header</span> <span class="p">{</span>
-      <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="k">color</span><span class="o">,</span> <span class="nb">blue</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="nc">.component</span> <span class="nc">.text</span> <span class="p">{</span>
-      <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="k">text</span><span class="o">-</span><span class="k">color</span><span class="o">,</span> <span class="nb">black</span><span class="p">);</span>
-    <span class="p">}</span>
-    
-    <span class="c">/* In the larger application’s style: */</span>
-    <span class="nc">.component</span> <span class="p">{</span>
-      <span class="o">--</span><span class="k">text</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="m">#080</span><span class="p">;</span>
-      <span class="c">/* header-color isn’t set,</span>
-    <span class="c">     and so remains blue,</span>
-    <span class="c">     the fallback value */</span>
-    <span class="p">}</span>
-
-This technique is especially useful for theming Web Components that use Shadow
-DOM, as custom properties can traverse shadow boundaries. A Web Component author
-can create an initial design using fallback values, and expose theming “hooks” 
-in the form of custom properties.
-
-    <span class="c"><!-- In the web component's definition: --></span>
-    <span class="nt"><x-foo></span>
-      #shadow
-        <span class="nt"><style></span>
-          <span class="nt">p</span> <span class="p">{</span>
-            <span class="k">background-color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="k">text</span><span class="o">-</span><span class="k">background</span><span class="o">,</span> <span class="nb">blue</span><span class="p">);</span>
-          <span class="p">}</span>
-        <span class="nt"></style></span>
-        <span class="nt"><p></span>
-          This text has a yellow background because the document styled me! Otherwise it
-          would be blue.
-        <span class="nt"></p></span>
-    <span class="nt"></x-foo></span>
-
-    <span class="c">/* In the larger application's style: */</span>
-    <span class="nt">x-foo</span> <span class="p">{</span>
-      <span class="o">--</span><span class="k">text</span><span class="o">-</span><span class="k">background</span><span class="o">:</span> <span class="nb">yellow</span><span class="p">;</span>
-    <span class="p">}</span>
-
-When using `var()` there are a few gotchas to watch out for. Variables cannot
-be property names. For instance:
-
-    <span class="nc">.foo</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">side</span><span class="o">:</span> <span class="k">margin-top</span><span class="p">;</span>
-      <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">side</span><span class="p">)</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-    <span class="p">}</span>
-
-However this is not equivalent to setting `margin-top: 20px;`. Instead, the
-second declaration is invalid and is thrown out as an error.
-
-Similarly, you can’t (naively) build up a value where part of it is provided
-by a variable:
-
-    <span class="nc">.foo</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">gap</span><span class="o">:</span> <span class="m">20</span><span class="p">;</span>
-      <span class="k">margin-top</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">gap</span><span class="p">)</span><span class="k">px</span><span class="p">;</span>
-    <span class="p">}</span>
-
-Again, this is not equivalent to setting `margin-top: 20px;`. To build up a
-value, you need something else: the`calc()` function.
-
-## Building values with calc() {#building-values-with-calc}
-
-If you’ve never worked with it before, the `calc()` function is a handly little
-tool that lets you perform calculations to determine CSS values. It’s
-[supported on all modern browsers][2], and can be combined with custom
-properties to build up new values. For example:
-
-    <span class="nc">.foo</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">gap</span><span class="o">:</span> <span class="m">20</span><span class="p">;</span>
-      <span class="k">margin-top</span><span class="o">:</span> <span class="n">calc</span><span class="p">(</span><span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">gap</span><span class="p">)</span> <span class="o">*</span> <span class="m">1px</span><span class="p">);</span> <span class="c">/* niiiiice */</span>
-    <span class="p">}</span>
-
-## Working with custom properties in JavaScript {#working-with-custom-
-properties-in-javascript
+:root {
+    --main-color: #06c;
 }
 
-To get the value of a custom property at runtime, use the `getPropertyValue()`
-method of the computed CSSStyleDeclaration object.
+#foo h1 {
+    color: var(--main-color);
+}
 
-    <span class="c">/* CSS */</span>
-    <span class="nd">:root</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
-    <span class="p">}</span>
-    
-    <span class="nt">p</span> <span class="p">{</span>
-      <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="p">);</span>
-    <span class="p">}</span>
+`--main-color` - это определённое автором кастомное свойство со значением #06c.
+Заметьте, что все кастомные свойства начинаются с двух дефисов.
 
-    <span class="c"><!-- HTML --></span>
-    <span class="nt"><p></span>I’m a red paragraph!<span class="nt"></p></span>
+Функция `var()` возвращает значение кастомного свойства и заменяется на него, в
+результате чего получается `color: #06c;`. Если кастомное свойство определено
+где-то в Вашей таблице стилей, оно должно быть доступно функции `var`. 
 
-    <span class="cm">/* JS */</span>
-    <span class="kd">var</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">getComputedStyle</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">styles</span><span class="p">.</span><span class="nx">getPropertyValue</span><span class="p">(</span><span class="s1">'--primary-color'</span><span class="p">)).</span><span class="nx">trim</span><span class="p">();</span>
-    <span class="c1">// value = 'red'</span>
+Синтаксис на первый взгляд может показаться странным. Многие разработчики
+спрашивают: "Почему бы просто не использовать `$foo`" для имён переменных?"
+Такой подход был выбран специально для того, чтобы особенность была максимально
+гибкой, и в перспективе могла позволить `$foo`-макросы. Более подробно можно
+почитать [сообщение][1] одного из авторов, Таба Аткинса.
 
-Similarly, to set the value of custom property at runtime, use the 
-`setProperty()` method of the `CSSStyleDeclaration` object.
+## Синтаксис кастомных свойств
 
-    <span class="c">/* CSS */</span>
-    <span class="nd">:root</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
-    <span class="p">}</span>
-    
-    <span class="nt">p</span> <span class="p">{</span>
-      <span class="k">color</span><span class="o">:</span> <span class="n">var</span><span class="p">(</span><span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="p">);</span>
-    <span class="p">}</span>
+Синтаксис кастомных свойств довольно непосредственен.
 
-    <span class="c"><!-- HTML --></span>
-    <span class="nt"><p></span>Now I’m a green paragraph!<span class="nt"></p></span>
+--header-color: #06c;
 
-    <span class="cm">/* JS */</span>
-    <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">'--primary-color'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">);</span>
+Отметим, что кастомные свойства регистрозависимы, то есть `--header-color` и
+`--Header-Color` - это разные кастомные свойства. Хотя разрешённый синтаксис
+кастомных свойств поначалу может казаться простым, на самом деле он весьма
+снисходителен. К примеру, ниже - пример валидного кастомного свойства:
 
-You can also set the value of the custom property to refer to another custom
-property at runtime by using the`var()` function in your call to 
+--foo: if(x > 5) this.width = 10;
+
+Хотя это выражение не будет работать как переменная (а также не будет валидным
+для любого обычного свойства), в принципе JavaScript может прочитать и
+распознать его в рантайме. Это означает, что кастомные свойства могут открыть
+доступ ко всевозможным интересностям, недоступным с нынешними
+CSS-препроцессорами. Так что если Вы думаете что-то вроде "*зевая* Какая
+разница, у меня есть SASS…", подумайте ещё раз! Это не те переменные, с которыми
+Вы привыкли работать.
+
+### Каскад
+
+Кастомные свойства следуют стандартным правилам каскада, так что Вы можете
+определить одно и то же свойство на разных уровнях специфичности.
+
+:root { --color: blue; }
+div { --color: green; }
+#alert { --color: red; }
+* { color: var(--color); }
+
+<p>I inherited blue from the root element!</p>
+<div>I got green set directly on me!</div>
+<div id="alert">
+    While I got red set directly on me!
+    <p>I’m red too, because of inheritance!</p>
+</div>
+
+Это означает, что можно использовать кастомные свойства в медиавыражениях для
+помощи с отзвычивым дизайном. Примером использования может быть расширение
+внешних отступов от основных структурных элементов при увеличении размеров
+экрана:
+
+:root {
+    --gutter: 4px;
+}
+
+section {
+    margin: var(--gutter);
+}
+
+@media (min-width: 600px) {
+    :root {
+        --gutter: 16px;
+    }
+}
+
+Необходимо отметить, что вышеприведённый фрагмент кода невыполним на нынешних
+CSS-препроцессорах, неспособных определять переменные внутри медиавыражений.
+У этой возможности огромный потенциал!
+
+Также допустимо иметь кастомные свойства, получающие своё значение из других
+кастомных свойств. Это может быть крайне полезно для настройки тем:
+
+:root {
+    --primary-color: red;
+    --logo-text: var(--primary-color);
+}
+
+## Функция var()
+
+Чтобы получить и использовать значение кастомного свойства, понадобится функция
+`var()`. Её синтаксис выглядит так:
+
+var(<custom-property-name> [, <declaration-value> ]? )
+
+Здесь `<custom-property-name>` - имя определённого автором кастомного
+свойства, `<declaration-value>` - фолбек, который будет использован, если
+упомянутое кастомное свойство не является валидным. Фолбек может быть списком,
+разделённым запятыми; он будет преобразован к единому значению. Например,
+`var(--font-stack, "Roboto", "Helvetica");` определяет фолбек
+`"Roboto", "Helvetica"`. Имейте в виду, что краткая запись (как в случае
+внешних и внутренних отступов) разделяется не запятыми, так что приемлемый
+фолбек для внутренних отступов будет выглядеть примерно так.
+
+p {
+    padding: var(--pad, 10px 15px 20px);
+}
+
+С такими фолбеками автор компоненты может написать для своего элемента
+пуленепробиваемые стили:
+
+/* В стиле компоненты: */
+.component .header {
+    color: var(--header-color, blue);
+}
+.component .text {
+    color: var(--text-color, black);
+}
+
+/* В стиле основного приложения: */
+.component {
+    --text-color: #080;
+    /* header-color не установлен,
+         поэтому остаётся синим
+         в соответствии с фолбеком */
+}
+
+Этот метод особенно полезен для стилизации веб-компонент, использующих
+Shadow DOM, поскольку кастомные свойства могут пересекать теневые границы.
+Автор веб-компоненты может создать начальный дизайн при помощи фолбеков, а
+потом настроить стили при помощи кастомных свойств.
+
+<!-- В определении веб-компоненты: -->
+<x-foo>
+    #shadow
+        <style>
+            p {
+                background-color: var(--text-background, blue);
+            }
+        </style>
+        <p>
+            This text has a yellow background because the document styled me!
+            Otherwise it would be blue.
+        </p>
+</x-foo>
+
+/* В стиле основного приложения: */
+x-foo {
+    --text-background: yellow;
+}
+
+При использовании `var()` нужно следить за несколькими подвохами. Переменные не
+могут быть именами свойств. К примеру:
+
+.foo {
+    --side: margin-top;
+    var(--side): 20px;
+}
+
+Это не является эквивалентом присваивания `margin-top: 20px;`. Более того,
+второе объявление не является валидным, и выбросит ошибку.
+
+Аналогично, невозможно создать значение, часть котороо берётся из переменной:
+
+.foo {
+    --gap: 20;
+    margin-top: var(--gap)px;
+}
+
+Это тоже не является эквивалентом присваивания `margin-top: 20px;`. Чтобы
+собрать значение, понадобится кое-что другое: функция `calc()`.
+
+## Создание значений с помощью calc()
+
+На случай, если вы никогда раньше с ней не работали, функция `calc()` -
+небольшой удобный инструмент, позволяющий проводить вычисления для определения
+значений CSS. Она [поддерживается всеми современными браузерами][2], и может
+быть использована вместе с кастомными свойствами для создания новых значений.
+Например:
+
+.foo {
+    --gap: 20;
+    margin-top: calc(var(--gap) * 1px); /* зашибись */
+}
+
+## Работа с кастомными свойствами в JavaScript
+
+Чтобы получить значение кастомного свойства в рантайме, используйте метод
+`getPropertyValue()` вычисленного объекта CSSStyleDeclaration.
+
+/* CSS */
+:root {
+    --primary-color: red;
+}
+
+p {
+    color: var(--primary-color);
+}
+
+<!-- HTML -->
+<p>I’m a red paragraph!</p>
+
+/* JS */
+var styles = getComputedStyle(document.documentElement);
+var value = String(styles.getPropertyValue('--primary-color')).trim();
+// value = 'red'
+
+Аналогично, чтобы в рантайме менять значение кастомного свойства, используйте
+метод `setProperty()` объекта `CSSStyleDeclaration`.
+
+/* CSS */
+:root {
+  --primary-color: red;
+}
+
+p {
+  color: var(--primary-color);
+}
+
+<!-- HTML -->
+<p>Now I’m a green paragraph!</p>
+
+/* JS */
+document.documentElement.style.setProperty('--primary-color', 'green');
+
+Также при задании значения кастомного свойства в рантайме можно использовать
+ссылку на другое кастомное свойство, вставив функцию `var()` в вызов
 `setProperty()`.
 
-    <span class="c">/* CSS */</span>
-    <span class="nd">:root</span> <span class="p">{</span>
-      <span class="o">--</span><span class="n">primary</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
-      <span class="o">--</span><span class="n">secondary</span><span class="o">-</span><span class="k">color</span><span class="o">:</span> <span class="nb">blue</span><span class="p">;</span>
-    <span class="p">}</span>
+/* CSS */
+:root {
+  --primary-color: red;
+  --secondary-color: blue;
+}
 
-    <span class="c"><!-- HTML --></span>
-    <span class="nt"><p></span>Sweet! I’m a blue paragraph!<span class="nt"></p></span>
+<!-- HTML -->
+<p>Sweet! I’m a blue paragraph!</p>
 
-    <span class="cm">/* JS */</span>
-    <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">setProperty</span><span class="p">(</span><span class="s1">'--primary-color'</span><span class="p">,</span> <span class="s1">'var(--secondary-color)'</span><span class="p">);</span>
+/* JS */
+document.documentElement.style.setProperty('--primary-color', 'var(--secondary-color)');
 
-Because custom properties can refer to other custom properties in your
-stylesheets, you could imagine how this could lead to all sorts of interesting 
-runtime effects.
+Можете представить, к каким разнообразным рантайм-эффектам это может привести.
 
-## Browser Support {#browser-support}
+## Поддерживыемые браузеры
 
-Currently Chrome 49, Firefox 42, Safari 9.1, and iOS Safari 9.3 support custom
-properties.
+На данный момент Chrome 49, Firefox 42, Safari 9.1, и iOS Safari 9.3
+поддерживают кастомные свойства.
 
-## Demo {#demo}
+## Демо
+                                                                                 
+Взгляните на [пример][3], чтобы получить представление о всевозможных
+интересностям, доступным благодаря кастомным свойствам.
 
-Try out the [sample][3] for a glimpse at all of the interesting techniques you
-can now leverage thanks to custom properties.
+## Где почитать
 
-## Further Reading {#further-reading}
+Если Вы хотите узнать больше про кастомные свойства, Филип Уолтон из команды
+Google Analytics написал учебник для начинающих про то, [почему он в восторге от
+кастомных свойств][4], и за их продвижением можно следить в других браузерах на
+[chromestatus.com][5].
 
-If you’re interested to learn more about custom properties, Philip Walton
-from the Google Analytics team has written a primer on
-[why he’s excited for custom properties][4] and you can keep tab on their
-progress in other browsers over on[chromestatus.com][5].
-
-Except as otherwise noted, the content of this page is licensed under the 
-[Creative Commons Attribution 3.0 License][6], and code samples are licensed
-under the[Apache 2.0 License][7]. For details, see our [Terms of Service][8].
+Если не указано обратного, всё содержимое этой страницы находится под лицензией
+[Creative Commons Attribution 3.0 License][6], а фрагменты кода находятся под
+лицензией [Apache 2.0 License][7]. Подробнее смотри [Terms of Service][8].
 
  [1]: http://www.xanthir.com/blog/b4KT0
  [2]: http://caniuse.com/#search=calc
