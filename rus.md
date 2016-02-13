@@ -273,7 +273,7 @@ Shadow DOM, поскольку кастомные свойства могут п
     }
 
     <!-- HTML -->
-    <p>Здорово! Я - абзац синего цвета!</p>
+    <p>Здорово! Этот синего цвета!</p>
 
     /* JS */
     document.documentElement.style.setProperty('--primary-color', 'var(--secondary-color)');
