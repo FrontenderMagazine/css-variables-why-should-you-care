@@ -80,20 +80,17 @@ SASS или LESS, которые решают эту проблему испол
 Кастомные свойства следуют стандартным правилам каскада, так что вы можете
 определить одно и то же свойство на разных уровнях специфичности:
 
-```
-:root { --color: blue; }
-div { --color: green; }
-#alert { --color: red; }
-* { color: var(--color); }
-```
-```
-<p>У меня синий цвет, унаследованный от root!</p>
-<div>А для меня установлен зелёный!</div>
-<div id="alert">
-  Ну а для меня - красный!
-  <p>И для меня красный: из-за наследования!</p>
-</div>
-```
+    :root { --color: blue; }
+    div { --color: green; }
+    #alert { --color: red; }
+    * { color: var(--color); }
+     
+    <p>У меня синий цвет, унаследованный от root!</p>
+    <div>А для меня установлен зелёный!</div>
+    <div id="alert">
+      Ну а для меня - красный!
+      <p>И для меня красный: из-за наследования!</p>
+    </div>
 
 Это означает, что можно использовать кастомные свойства в медиа-выражениях 
 для управления отзывчивым дизайном. Примером использования может служить 
@@ -170,27 +167,24 @@ Shadow DOM, поскольку кастомные свойства могут п
 Автор веб-компоненты может создать начальный дизайн при помощи фолбеков, а
 потом настроить стили при помощи кастомных свойств:
 
-```
-<!-- В определении веб-компоненты: -->
-<x-foo>
-  #shadow
-    <style>
-      p {
-        background-color: var(--text-background, blue);
-      }
-    </style>
-    <p>
-      У этого текста жёлтый фон, потому что так указано в документе!
-      Иначе был бы синий.
-    </p>
-</x-foo>
-```
-```
-/* В стилях основного приложения: */
-x-foo {
-  --text-background: yellow;
-}
-```
+    <!-- В определении веб-компоненты: -->
+    <x-foo>
+      #shadow
+        <style>
+          p {
+            background-color: var(--text-background, blue);
+          }
+        </style>
+        <p>
+          У этого текста жёлтый фон, потому что так указано в документе!
+          Иначе был бы синий.
+        </p>
+    </x-foo>
+     
+    /* В стилях основного приложения: */
+    x-foo {
+      --text-background: yellow;
+    }
 
 При использовании `var()` нужно иметь в виду несколько нюансов. Например, переменные не
 могут быть именами свойств:
@@ -233,67 +227,57 @@ x-foo {
 Чтобы получить значение кастомного свойства, используйте метод
 `getPropertyValue()` объекта CSSStyleDeclaration.
 
-```
-/* CSS */
-:root {
-  --primary-color: red;
-}
- 
-p {
-  color: var(--primary-color);
-}
- 
-<!-- HTML -->
-<p>Этот абзац красного цвета!</p>
-```
-```
-/* JS */
-var styles = getComputedStyle(document.documentElement);
-var value = String(styles.getPropertyValue('--primary-color')).trim();
-// value = 'red'
-```
+    /* CSS */
+    :root {
+      --primary-color: red;
+    }
+     
+    p {
+      color: var(--primary-color);
+    }
+     
+    <!-- HTML -->
+    <p>Этот абзац красного цвета!</p>
+     
+    /* JS */
+    var styles = getComputedStyle(document.documentElement);
+    var value = String(styles.getPropertyValue('--primary-color')).trim();
+    // value = 'red'
+
 
 Аналогично, чтобы динамически менять значение кастомного свойства, используйте
 метод `setProperty()` объекта `CSSStyleDeclaration`.
 
-```
-/* CSS */
-:root {
-  --primary-color: red;
-}
-
-p {
-  color: var(--primary-color);
-}
-```
-```
-<!-- HTML -->
-<p>А теперь этот абзац зелёного цвета!</p>
-```
-```
-/* JS */
-document.documentElement.style.setProperty('--primary-color', 'green');
-```
+    /* CSS */
+    :root {
+      --primary-color: red;
+    }
+        
+    p {
+      color: var(--primary-color);
+    }
+     
+    <!-- HTML -->
+    <p>А теперь этот абзац зелёного цвета!</p>
+     
+    /* JS */
+    document.documentElement.style.setProperty('--primary-color', 'green');
 
 Также при задании значения кастомного свойства на лету можно использовать
 ссылку на другое кастомное свойство, вставив функцию `var()` в вызов
 `setProperty()`.
 
-```
-/* CSS */
-:root {
-  --primary-color: red;
-  --secondary-color: blue;
-}
-```
-```
-<!-- HTML -->
-<p>Здорово! Этот абзац синего цвета!</p>
-```
-```
-/* JS */
-document.documentElement.style.setProperty('--primary-color', 'var(--secondary-color)');
-```
+    /* CSS */
+    :root {
+      --primary-color: red;
+      --secondary-color: blue;
+    }
+     
+    <!-- HTML -->
+    <p>Здорово! Этот абзац синего цвета!</p>
+     
+    /* JS */
+    document.documentElement.style.setProperty('--primary-color', 'var(--secondary-color)');
 
 Поскольку кастомные свойства могут ссылаться на другие кастомные свойства,
 можете представить какие интересные динамические эффекты можно будет делать подобным образом.
